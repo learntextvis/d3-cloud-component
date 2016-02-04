@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+  <title></title>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
+  <script type="text/javascript" src="dist/d3cloud.deps.js"></script>
+  <script type="text/javascript" src="dist/d3cloud.js"></script>
+  <script type="text/javascript" src="data/emma_data.js"></script>
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+
+
+<style>
+.mytooltip, .mypopup {
+  position: absolute;
+  z-index: 10;
+  padding: 3px;
+  background: #eee;
+  border: 1px solid steelblue;
+}
+
+.mytooltip p {
+  font-family: sans-serif;
+  line-height: .6em;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 10pt;
+}
+
+.mypopup .controls button {
+    float:right;
+    margin-top:-30px;
+    margin-right:-30px;
+    cursor:pointer;
+    color: #fff;
+    border: 1px solid #AEAEAE;
+    border-radius: 30px;
+    background: #605F61;
+    font-size: 31px;
+    font-weight: bold;
+    display: inline-block;
+    line-height: 0px;
+    padding: 11px 3px;
+}
+
+.mypopup button:before {
+    content: "X";
+}
+
+.keywords-in-context {
+  font-family: sans-serif;
+  font-size: 12px;
+  max-height:300px;
+  max-width: 500px;
+  overflow-y:auto;
+  margin-bottom:30px;
+  background-color: white;
+  padding: 20px;
+  border: 1px #eee;
+}
+
+.token {
+  font-family: "Arial";
+  fill: steelblue;
+}
+
+.word-cloud-plot .title {
+  text-align: center;
+  font-style: bold;
+  font-size: 1.2em;
+  color: black;
+  text-decoration: none;
+}
+
+.word-cloud-plot {
+  max-width: 600px;
+  border: none;
+}
+
+</style>
+
+</head>
+
+<body>
+  <div id='main'></div>
+
+</body>
+
+<script type="text/javascript">
+  // This config can be loaded from an external location using ajax.
+
+  var config = {};
+  var kwic_data, opts;
+
+
+  var kwic_opts = {
+    "classname": "mypopup",
+    "kwikContextSize": 30
+  };
+
+  var tooltip_opts = {
+    "classname": "mytooltip"
+  };
+
+  // The container we will render our component into.
+  var container = document.querySelector("#main");
+
+  function do_cloud(error, emma) {
+
+    if (error) {
+      console.log(error);
+    }
+    kwic_data = [
+        {
+          "id": "austen_emma",
+          "name": "Emma by Jane Austen",
+          "text": emma
+        }
+      ];
+
+    // Package it all up and call the show function
+    opts = {
+      config: config,
+      data: data,
+      kwikData: kwic_data,
+      kwicOpts: kwic_opts,
+      tooltipOpts: tooltip_opts,
+      container: container
+    }
+    DaviesWordCloud.show(opts);
+
+  }
+
+
+  queue()
+    .defer(d3.text, 'data/emma.txt')
+    .await(do_cloud);
+
+
+</script>
+</html>
