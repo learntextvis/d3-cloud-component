@@ -1,6 +1,6 @@
 import d3 from 'd3';
 import _ from 'lodash';
-var d3Cloud = require('d3-cloud'); // Is there a real es6 way to get d3.layout.cloud?
+import d3Cloud from 'd3-cloud';
 
 export default class DaviesWordCloud {
   constructor(opts) {
@@ -103,7 +103,7 @@ export default class DaviesWordCloud {
         .size([500, 500])
         .words(doc.tokens)
         .rotate(0)
-        .font('Arial')
+        .font('Arial') // TODO(Lynn): make an option
         .spiral('rectangular')
         .text(function(d) {
           return d[0]; })
@@ -147,7 +147,7 @@ export default class DaviesWordCloud {
             self.dispatch.mouseout(this);
           })
           .on('click', function(d) {
-            var docId = this.parentNode.parentNode.__data__.id;  // something better?
+            var docId = this.parentNode.parentNode.__data__.id;
             var token = d[0];
             self.dispatch.click(token, docId, this);
           });

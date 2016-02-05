@@ -23,7 +23,7 @@
     "lodash": "^4.0.0",
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
-    "keyword-in-context": "^0.0.x"
+    "keyword-in-context": "learntextvis/keyword-in-context"
   },
   "devDependencies": {
     "babel-core": "^6.3.13",

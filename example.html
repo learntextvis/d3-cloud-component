@@ -6,7 +6,6 @@
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.14/d3.min.js"></script>
   <script type="text/javascript" src="dist/d3cloud.deps.js"></script>
   <script type="text/javascript" src="dist/d3cloud.js"></script>
-  <script type="text/javascript" src="data/emma_data.js"></script>
   <script src="http://d3js.org/queue.v1.min.js"></script>
 
 
@@ -90,41 +89,61 @@
   // This config can be loaded from an external location using ajax.
 
   var config = {};
-  var kwic_data, opts;
+  var kwicData, opts;
 
-
-  var kwic_opts = {
+  var kwicOpts = {
     "classname": "mypopup",
-    "kwikContextSize": 30
+    "kwicContextSize": 30,
+    "limit": 100
   };
 
-  var tooltip_opts = {
+  var tooltipOpts = {
     "classname": "mytooltip"
   };
 
   // The container we will render our component into.
   var container = document.querySelector("#main");
 
-  function do_cloud(error, emma) {
+  function fix_counts(data, limit) {
+    console.log(data);
+    var newTokens = [];
+    data.tokens.forEach(function(d,i) {
+      var list = d.split(',');
+      if (list.length == 2 && i < limit-1) {
+        newTokens.push([list[0], +list[1]]);
+      }
+    });
+    return [{
+        "id": data.id,
+        "name": data.name,
+        "tokens": newTokens
+    }];
+  }
+
+  function do_cloud(error, doc, counts) {
 
     if (error) {
-      console.log(error);
+      console.log("error on load", error);
     }
-    kwic_data = [
+
+    // has to match the id of the document
+    var kwicData = [
         {
-          "id": "austen_emma",
-          "name": "Emma by Jane Austen",
-          "text": emma
+          "id": "pride",
+          "name": "Pride and Prejudice",
+          "text": doc
         }
       ];
+
+    var wordData = fix_counts(counts[0], 150);
 
     // Package it all up and call the show function
     opts = {
       config: config,
-      data: data,
-      kwikData: kwic_data,
-      kwicOpts: kwic_opts,
-      tooltipOpts: tooltip_opts,
+      data: wordData,
+      kwicData: kwicData,
+      kwicOpts: kwicOpts,
+      tooltipOpts: tooltipOpts,
       container: container
     }
     DaviesWordCloud.show(opts);
@@ -133,7 +152,8 @@
 
 
   queue()
-    .defer(d3.text, 'data/emma.txt')
+    .defer(d3.text, 'data/pride_and_prejudice.txt')
+    .defer(d3.json, 'data/pride_counts.json')
     .await(do_cloud);
 
 

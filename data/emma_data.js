@@ -1,4 +1,4 @@
-var data = [
+var worddata = [
   {
     "id": "austen_emma",
     "name": "Emma by Jane Austen",

@@ -69,11 +69,11 @@ return webpackJsonp([0],[
 	
 	var _d3cloud2 = _interopRequireDefault(_d3cloud);
 	
-	var _keywordInContext = __webpack_require__(257);
+	var _keywordInContext = __webpack_require__(256);
 	
-	__webpack_require__(266);
+	__webpack_require__(265);
 	
-	__webpack_require__(268);
+	__webpack_require__(267);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -91,11 +91,10 @@ return webpackJsonp([0],[
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (0, _getPrototypeOf2.default)(DaviesWordCloudComponent).call(this));
 	
 	    _this.state = {
-	      kwikQuery: '',
-	      kwikText: '',
+	      kwicQuery: '',
+	      kwicText: '',
 	      selectedNode: '',
-	      tooltipNode: '',
-	      tooltipCount: ''
+	      tooltip: undefined
 	    };
 	    return _this;
 	  }
@@ -105,12 +104,12 @@ return webpackJsonp([0],[
 	  (0, _createClass3.default)(DaviesWordCloudComponent, [{
 	    key: 'clicked',
 	    value: function clicked(token, documentId, node) {
-	      var text = this.props.kwikData.find(function (d) {
+	      var text = this.props.kwicData.find(function (d) {
 	        return d.id === documentId;
 	      }).text;
 	      this.setState({
-	        'kwikQuery': token,
-	        'kwikText': text,
+	        'kwicQuery': ' ' + token + ' ', // pad with spaces in wordcloud!
+	        'kwicText': text,
 	        'selectedNode': node,
 	        'tooltip': undefined
 	      });
@@ -185,8 +184,8 @@ return webpackJsonp([0],[
 	      );
 	    }
 	  }, {
-	    key: 'tooltip',
-	    value: function tooltip(myclass, style, word, count) {
+	    key: 'renderTooltip',
+	    value: function renderTooltip(myclass, style, word, count) {
 	      return _react2.default.createElement(
 	        'div',
 	        { className: myclass, style: style },
@@ -207,8 +206,8 @@ return webpackJsonp([0],[
 	      );
 	    }
 	  }, {
-	    key: 'renderTooltip',
-	    value: function renderTooltip() {
+	    key: 'createTooltip',
+	    value: function createTooltip() {
 	
 	      var style;
 	      var content;
@@ -223,7 +222,7 @@ return webpackJsonp([0],[
 	          top: nodeOffset.top - 25,
 	          left: nodeOffset.left + 25
 	        };
-	        return this.tooltip(className, style, word, count);
+	        return this.renderTooltip(className, style, word, count);
 	      } else {
 	        return null;
 	      }
@@ -233,29 +232,29 @@ return webpackJsonp([0],[
 	    value: function renderKeywordInContext(opts) {
 	      var _this2 = this;
 	
-	      var kwik;
-	      var kwikPosition;
+	      var kwic;
+	      var kwicPosition;
 	      var kwclass;
 	
 	      if (this.state.selectedNode) {
 	        var nodeOffset = this.getOffset(this.state.selectedNode);
-	        kwikPosition = {
+	        kwicPosition = {
 	          top: nodeOffset.top + nodeOffset.height,
 	          left: nodeOffset.left
 	        };
 	        kwclass = opts.classname;
-	
-	        kwik = _react2.default.createElement(
+	        kwic = _react2.default.createElement(
 	          'div',
 	          null,
 	          _react2.default.createElement(_keywordInContext.KeywordInContext, {
 	            caseSensitive: false,
-	            contextSize: opts.kwikContextSize,
-	            text: this.state.kwikText,
-	            query: this.state.kwikQuery
+	            contextSize: opts.kwicContextSize,
+	            text: this.state.kwicText,
+	            query: this.state.kwicQuery,
+	            limit: opts.limit
 	          })
 	        );
-	        return this.kwicModal(kwclass, kwikPosition, kwik, function () {
+	        return this.kwicModal(kwclass, kwicPosition, kwic, function () {
 	          _this2.setState({
 	            'selectedNode': undefined,
 	            'tooltip': undefined
@@ -271,7 +270,7 @@ return webpackJsonp([0],[
 	        null,
 	        _react2.default.createElement('div', { className: 'cloud-container' }),
 	        this.renderKeywordInContext(this.props.kwicOpts),
-	        this.renderTooltip()
+	        this.createTooltip()
 	      );
 	    }
 	  }]);
@@ -284,13 +283,13 @@ return webpackJsonp([0],[
 	  // document properties here.
 	  config: _react2.default.PropTypes.object.isRequired,
 	  data: _react2.default.PropTypes.array.isRequired,
-	  kwikData: _react2.default.PropTypes.array,
+	  kwicData: _react2.default.PropTypes.array,
 	  kwicOpts: _react2.default.PropTypes.object.isRequired,
 	  tooltipOpts: _react2.default.PropTypes.object
 	};
 	
 	DaviesWordCloudComponent.defaultProps = {
-	  kwikData: [],
+	  kwicData: [],
 	  tooltipOpts: { 'class': 'mytooltip' }
 	};
 	
@@ -301,7 +300,7 @@ return webpackJsonp([0],[
 	 * @param  {Object} opts display parameters.
 	 * @param  {Object} opts.config
 	 * @param  {Array} opts.data
-	 * @param  {Array} opts.kwikData
+	 * @param  {Array} opts.kwicData
 	 * @param  {DOMNode} opts.container
 	 * @param  {String} opts.query
 	 *
@@ -309,7 +308,7 @@ return webpackJsonp([0],[
 	DaviesWordCloudComponent.show = function (opts) {
 	  var config = opts.config;
 	  var data = opts.data;
-	  var kwikData = opts.kwikData;
+	  var kwicData = opts.kwicData;
 	  var kwicOpts = opts.kwicOpts;
 	  var container = opts.container;
 	  var tooltipOpts = opts.tooltipOpts;
@@ -318,7 +317,7 @@ return webpackJsonp([0],[
 	    config: config,
 	    data: data,
 	    kwicOpts: kwicOpts,
-	    kwikData: kwikData,
+	    kwicData: kwicData,
 	    tooltipOpts: tooltipOpts
 	  }), container);
 	};
@@ -1391,9 +1390,11 @@ return webpackJsonp([0],[
 	
 	var _lodash2 = _interopRequireDefault(_lodash);
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _d3Cloud = __webpack_require__(254);
 	
-	var d3Cloud = __webpack_require__(255); // Is there a real es6 way to get d3.layout.cloud?
+	var _d3Cloud2 = _interopRequireDefault(_d3Cloud);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var DaviesWordCloud = function () {
 	  function DaviesWordCloud(opts) {
@@ -1521,7 +1522,8 @@ return webpackJsonp([0],[
 	          return d[1];
 	        }));
 	
-	        var layout = d3Cloud().size([500, 500]).words(doc.tokens).rotate(0).font('Arial').spiral('rectangular').text(function (d) {
+	        var layout = (0, _d3Cloud2.default)().size([500, 500]).words(doc.tokens).rotate(0).font('Arial') // TODO(Lynn): make an option
+	        .spiral('rectangular').text(function (d) {
 	          return d[0];
 	        }).fontSize(function (d) {
 	          return self.fontSize(d[1]);
@@ -1549,7 +1551,7 @@ return webpackJsonp([0],[
 	          }).on('mouseout', function (d) {
 	            self.dispatch.mouseout(this);
 	          }).on('click', function (d) {
-	            var docId = this.parentNode.parentNode.__data__.id; // something better?
+	            var docId = this.parentNode.parentNode.__data__.id;
 	            var token = d[0];
 	            self.dispatch.click(token, docId, this);
 	          });
@@ -2449,8 +2451,7 @@ return webpackJsonp([0],[
 /* 251 */,
 /* 252 */,
 /* 253 */,
-/* 254 */,
-/* 255 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2458,7 +2459,7 @@ return webpackJsonp([0],[
 	// Word cloud layout by Jason Davies, https://www.jasondavies.com/wordcloud/
 	// Algorithm due to Jonathan Feinberg, http://static.mrfeinberg.com/bv_ch03.pdf
 	
-	var dispatch = __webpack_require__(256).dispatch;
+	var dispatch = __webpack_require__(255).dispatch;
 	
 	var cloudRadians = Math.PI / 180,
 	    cw = 1 << 11 >> 5,
@@ -2862,7 +2863,7 @@ return webpackJsonp([0],[
 	};
 
 /***/ },
-/* 256 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function (global, factory) {
@@ -2971,7 +2972,7 @@ return webpackJsonp([0],[
 	}));
 
 /***/ },
-/* 257 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2981,7 +2982,7 @@ return webpackJsonp([0],[
 	});
 	exports.KeywordInContext = undefined;
 	
-	var _keyword_in_context = __webpack_require__(258);
+	var _keyword_in_context = __webpack_require__(257);
 	
 	var _keyword_in_context2 = _interopRequireDefault(_keyword_in_context);
 	
@@ -2990,7 +2991,7 @@ return webpackJsonp([0],[
 	exports.KeywordInContext = _keyword_in_context2.default; // Exports for this module.
 
 /***/ },
-/* 258 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3027,11 +3028,11 @@ return webpackJsonp([0],[
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _match_with_context = __webpack_require__(259);
+	var _match_with_context = __webpack_require__(258);
 	
 	var _match_with_context2 = _interopRequireDefault(_match_with_context);
 	
-	__webpack_require__(264);
+	__webpack_require__(263);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -3195,7 +3196,7 @@ return webpackJsonp([0],[
 	};
 
 /***/ },
-/* 259 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3228,7 +3229,7 @@ return webpackJsonp([0],[
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	__webpack_require__(260);
+	__webpack_require__(259);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -3288,16 +3289,16 @@ return webpackJsonp([0],[
 	};
 
 /***/ },
-/* 260 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(261);
+	var content = __webpack_require__(260);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(263)(content, {});
+	var update = __webpack_require__(262)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -3314,10 +3315,10 @@ return webpackJsonp([0],[
 	}
 
 /***/ },
-/* 261 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(262)();
+	exports = module.exports = __webpack_require__(261)();
 	// imports
 	
 	
@@ -3328,7 +3329,7 @@ return webpackJsonp([0],[
 
 
 /***/ },
-/* 262 */
+/* 261 */
 /***/ function(module, exports) {
 
 	/*
@@ -3384,7 +3385,7 @@ return webpackJsonp([0],[
 
 
 /***/ },
-/* 263 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -3638,16 +3639,16 @@ return webpackJsonp([0],[
 
 
 /***/ },
-/* 264 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(265);
+	var content = __webpack_require__(264);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(263)(content, {});
+	var update = __webpack_require__(262)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -3664,10 +3665,10 @@ return webpackJsonp([0],[
 	}
 
 /***/ },
-/* 265 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(262)();
+	exports = module.exports = __webpack_require__(261)();
 	// imports
 	
 	
@@ -3678,16 +3679,16 @@ return webpackJsonp([0],[
 
 
 /***/ },
-/* 266 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(267);
+	var content = __webpack_require__(266);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(263)(content, {});
+	var update = __webpack_require__(262)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -3704,10 +3705,10 @@ return webpackJsonp([0],[
 	}
 
 /***/ },
-/* 267 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(262)();
+	exports = module.exports = __webpack_require__(261)();
 	// imports
 	
 	
@@ -3718,16 +3719,16 @@ return webpackJsonp([0],[
 
 
 /***/ },
-/* 268 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(269);
+	var content = __webpack_require__(268);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(263)(content, {});
+	var update = __webpack_require__(262)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -3744,10 +3745,10 @@ return webpackJsonp([0],[
 	}
 
 /***/ },
-/* 269 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(262)();
+	exports = module.exports = __webpack_require__(261)();
 	// imports
 	
 	

@@ -16,20 +16,19 @@ import './d3cloud.css';
    constructor() {
      super();
      this.state = {
-       kwikQuery: '',
-       kwikText: '',
+       kwicQuery: '',
+       kwicText: '',
        selectedNode: '',
-       tooltipNode: '',
-       tooltipCount: ''
+       tooltip: undefined
      };
    }
 
    // An event handler for when a word is selected in a word cloud
    clicked(token, documentId, node) {
-     var text = this.props.kwikData.find((d) => d.id === documentId).text;
+     var text = this.props.kwicData.find((d) => d.id === documentId).text;
      this.setState({
-       'kwikQuery': token,
-       'kwikText': text,
+       'kwicQuery': ' ' + token + ' ',  // pad with spaces in wordcloud!
+       'kwicText': text,
        'selectedNode': node,
        'tooltip': undefined
      });
@@ -121,27 +120,27 @@ import './d3cloud.css';
   }
 
   renderKeywordInContext(opts) {
-    var kwik;
-    var kwikPosition;
+    var kwic;
+    var kwicPosition;
     var kwclass;
 
     if (this.state.selectedNode) {
       let nodeOffset = this.getOffset(this.state.selectedNode);
-      kwikPosition = {
+      kwicPosition = {
         top: nodeOffset.top + nodeOffset.height,
         left: nodeOffset.left,
       };
       kwclass = opts.classname;
-
-      kwik = <div>
+      kwic = <div>
         <KeywordInContext
           caseSensitive={false}
-          contextSize={opts.kwikContextSize}
-          text={this.state.kwikText}
-          query={this.state.kwikQuery}
+          contextSize={opts.kwicContextSize}
+          text={this.state.kwicText}
+          query={this.state.kwicQuery}
+          limit={opts.limit}
         />
       </div>;
-      return this.kwicModal(kwclass, kwikPosition, kwik, () => {
+      return this.kwicModal(kwclass, kwicPosition, kwic, () => {
         this.setState({
           'selectedNode': undefined,
           'tooltip': undefined
@@ -165,13 +164,13 @@ DaviesWordCloudComponent.propTypes = {
   // document properties here.
   config: React.PropTypes.object.isRequired,
   data: React.PropTypes.array.isRequired,
-  kwikData: React.PropTypes.array,
+  kwicData: React.PropTypes.array,
   kwicOpts: React.PropTypes.object.isRequired,
   tooltipOpts: React.PropTypes.object
 };
 
 DaviesWordCloudComponent.defaultProps = {
-  kwikData: [],
+  kwicData: [],
   tooltipOpts: {'class': 'mytooltip'}
 };
 
@@ -182,7 +181,7 @@ DaviesWordCloudComponent.defaultProps = {
  * @param  {Object} opts display parameters.
  * @param  {Object} opts.config
  * @param  {Array} opts.data
- * @param  {Array} opts.kwikData
+ * @param  {Array} opts.kwicData
  * @param  {DOMNode} opts.container
  * @param  {String} opts.query
  *
@@ -190,7 +189,7 @@ DaviesWordCloudComponent.defaultProps = {
 DaviesWordCloudComponent.show = function(opts) {
   var config = opts.config;
   var data = opts.data;
-  var kwikData = opts.kwikData;
+  var kwicData = opts.kwicData;
   var kwicOpts = opts.kwicOpts;
   var container = opts.container;
   var tooltipOpts = opts.tooltipOpts;
@@ -200,7 +199,7 @@ DaviesWordCloudComponent.show = function(opts) {
       config={config}
       data={data}
       kwicOpts={kwicOpts}
-      kwikData={kwikData}
+      kwicData={kwicData}
       tooltipOpts={tooltipOpts}
     />,
     container
